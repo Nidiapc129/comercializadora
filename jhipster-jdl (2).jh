@@ -1,0 +1,163 @@
+entity Departamento {
+	IdDepartamento Integer required,
+	Nombre String
+}
+
+entity Dependencia {
+	IdDependencia Integer required,
+	Nombre String
+}
+
+entity TipoProducto {
+	IdTipoP Integer required,
+	Nombre String
+}
+
+
+entity UnidadMedida {
+	IdMedida Integer required,
+	Nombre String
+}
+
+entity TipoCliente {
+	IdTipoCl Integer required,
+	Nombre String
+}
+
+entity FormadePago {
+	IdFormaPago Integer required,
+	Nombre String
+}
+
+entity Cargo {
+	IdCargo Integer required,
+	Nombre String
+}
+
+entity OrdenSalida {
+	NroOrden Integer required,
+	Fecha Instant,
+    Valorpagado Integer  
+}
+
+entity Inventario {
+	ConsecInventario Integer required,
+	FechaIngreso Instant
+    FechaSalida Instant
+}
+
+entity Ciudad {
+	IdCiudad Integer required,
+	Nombre String
+}
+
+entity CentroAcopio {
+	Nit Integer required,
+	Nombre String,
+	Direccion String,
+    Email String
+}
+
+
+entity Personal {
+	Cedula Integer required,
+	Nombre String,
+	Direccion String,
+    Email String
+    FechaIninio Instant,
+    FechaTermina Instant,
+}
+entity Productos {
+	IdProducto Integer required,
+	Nombre String,
+    Descripcion String,
+    Foto Blob, 
+}
+
+entity Proveedor {
+	IdProveedor Integer required,
+	Nombre String,
+    Direccion String,
+    Telefono Integer,
+    Correo String, 
+}
+
+entity Cliente {
+	IdCliente Integer required,
+	Nombre String,
+    Direccion String,
+    Telefono Integer,
+    Correo String, 
+}
+
+entity FlujoCaja {
+	NroFlujo Integer required,
+	FechaIngreso Instant,
+    FechaSalida Instant,
+}
+
+entity CatalogoWeb {
+	NroVersion Integer required,
+	Fechapublicacion Instant
+}
+
+entity FacturaVenta {
+	 NroFactura Integer required,
+     Nit Integer,
+     Fecha Instant,
+     Flete Integer,
+     Cantidad Integer,
+     ValorTotal Integer,
+     ValorPagar Integer,
+     Observaciones String
+}
+
+relationship OneToOne {
+	Ciudad{IdDepartamento} to Departamento, 
+    Proveedor{IdDepartamento} to Departamento,
+    Proveedor{IdCiudad} to Ciudad,
+    Cliente{IdDepartamento} to Departamento,
+    Cliente{IdCiudad} to Ciudad,
+    Cliente{IdTipoCl} to TipoCliente,
+    Productos{IdTipoP} to TipoProducto,
+    CentroAcopio{IdDepartamento} to Departamento,
+    CentroAcopio{ConsectInventario} to Inventario,
+    CatalogoWeb{ConsectInventario} to Inventario,
+    FacturaVenta{NroFactura} to Cliente,
+    Cargo {IdCargo} to Dependencia,
+    Personal {Cedula} to Cargo
+}
+
+relationship OneToMany {
+    CentroAcopio to FlujoCaja {NroFlujo},
+    CentroAcopio to CatalogoWeb {NroVersion},
+    CatalogoWeb to Productos {IdProducto},
+    CatalogoWeb to Cliente {IdCliente},
+    CentroAcopio to Personal {Cedula},
+    Cliente to FormadePago {IdFormadePago},
+    Proveedor to OrdenSalida {NroOrden},
+    Productos to Proveedor {IdProveedor}, 
+    OrdenSalida to Productos {IdProducto},
+    Inventario to OrdenSalida {NroOrden},
+    Inventario to FacturaVenta {NroFactura}, 
+    FacturaVenta to UnidadMedida {IdMedida},
+    OrdenSalida to UnidadMedida {IdMedida},
+    CentroAcopio to FacturaVenta {NroFactura},
+    FlujoCaja to OrdenSalida {NroOrden},
+    FlujoCaja to FacturaVenta {NroFactura},
+    Personal  to FacturaVenta {NroFactura},
+    Personal  to OrdenSalida {NroOrden},
+}
+
+// Set pagination options
+paginate JobHistory, Employee with infinite-scroll
+paginate Job with pagination
+
+// Use Data Transfert Objects (DTO)
+// dto * with mapstruct
+
+// Set service options to all except few
+service all with serviceImpl except Employee, Job
+
+// Set an angular suffix
+// angularSuffix * with mySuffix
